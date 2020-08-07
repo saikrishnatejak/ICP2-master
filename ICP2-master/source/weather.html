@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Weather</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+</head>
+<body>
+
+
+<div ng-app="weatherApp" ng-controller="weatherCtrl"> 
+  <input type="text"  ng-model="state" placeholder="Enter State Code" id="state">
+  <input type="text"   ng-model="city" placeholder="Enter City Name" id="city">
+      <button id="btn" ng-click="weatherDetailsFn()">
+          Weather Details
+      </button>
+<h1>Weather Details are as follows</h1>
+  <table>
+    <th width="30%">Description</th>
+    <th width="30%">Value</th>
+    <tr ng-repeat="obj in WeatherDetails">
+      <td>{{ obj.name }}</td>
+      <td>{{ obj.value }}</td>
+    </tr>
+  </table>  
+</div>
+</body>
+</html>
+
+
+<script>
+
+var app = angular.module('weatherApp', []);
+app.controller('weatherCtrl', function($scope, $http) {
+  $scope.weatherDetailsFn = function() {
+    var state = document.getElementById("state").value;
+    var city = document.getElementById("city").value;
+    var query = "http://api.wunderground.com/api/4bbbc25f4f5946dd/conditions/q/" + state + "/" + city + ".json";
+    $http.get(query)
+    .then(function(response) {
+      var weatherData = response.data.current_observation;  
+      $scope.WeatherDetails = [];
+      $scope.WeatherDetails.push({name:"temperature", value:weatherData.temperature_string});
+      $scope.WeatherDetails.push({name:"wind", value:weatherData.wind_string});
+      $scope.WeatherDetails.push({name:"pressure", value:weatherData.pressure_mb});
+      $scope.WeatherDetails.push({name:"humidity", value:weatherData.relative_humidity});          
+      return $scope.WeatherDetails;        
+    });    
+
+  }
+});
+
+</script>
